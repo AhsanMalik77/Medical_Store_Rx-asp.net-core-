@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36327.8 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Medical_Store_Rx(asp.net core)", "Medical_Store_Rx(asp.net core)\Medical_Store_Rx(asp.net core).csproj", "{0486F08D-4DEE-4A55-A753-DCBEA1DC173D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0486F08D-4DEE-4A55-A753-DCBEA1DC173D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0486F08D-4DEE-4A55-A753-DCBEA1DC173D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0486F08D-4DEE-4A55-A753-DCBEA1DC173D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0486F08D-4DEE-4A55-A753-DCBEA1DC173D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CD3AFF2E-00FF-4F34-8DC1-B610B57A6CAB}
+	EndGlobalSection
+EndGlobal
