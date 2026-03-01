@@ -2,6 +2,7 @@
 using Medical_Store_Rx_asp.net_core_.Models;
 using System.Linq;
 using System.Threading.Tasks;
+using Medical_Store_Rx_asp.net_core_.DTOs.User;
 
 namespace Medical_Store_Rx_asp.net_core_.Controllers
 {
@@ -18,35 +19,45 @@ namespace Medical_Store_Rx_asp.net_core_.Controllers
 
         // Signup customer
         [HttpPost("Signup")]
-        public async Task<IActionResult> SignupCustomer([FromBody] Customer cust)
+        public async Task<IActionResult> SignupCustomer([FromBody] CustomerDto dto)
         {
-            if (cust == null || string.IsNullOrWhiteSpace(cust.Email) || string.IsNullOrWhiteSpace(cust.Password))
+            if (dto == null || string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.password))
                 return BadRequest("Email and Password are required");
 
-            bool emailExists = _db.Users.Any(u => u.Email == cust.Email);
+            bool emailExists =  _db.Users.Any(u => u.Email == dto.Email);
             if (emailExists)
                 return BadRequest("Email already exists");
 
-            // Create User first
-            var usr = new User
+            var user = new User
             {
-                Email = cust.Email,
-                Password = cust.Password,
-                Role = "customer"
+                Email = dto.Email,
+                Password = dto.password,
+                Role = "user"
             };
-            _db.Users.Add(usr);
+
+            _db.Users.Add(user);
             await _db.SaveChangesAsync();
 
-            // Link Customer to User
-            cust.CId = usr.Id;
-            cust.CIdNavigation = usr;
+            var customer = new Customer
+            {
+                CId = user.Id,
+                Name = dto.Name,
+                Email = dto.Email,
+                Password = dto.password,
+                
+                Contact = dto.Contact,
+                Dob = dto.Dob
+            };
 
-            _db.Customers.Add(cust);
+            _db.Customers.Add(customer);
             await _db.SaveChangesAsync();
 
-            return Ok("Customer Registered Successfully!");
+            return Ok(new
+            {
+                message = "Customer Registered Successfully",
+            
+            });
         }
-
         // Add profile
         [HttpPost("AddProfile")]
         public async Task<IActionResult> AddProfile([FromBody] Profile profile)

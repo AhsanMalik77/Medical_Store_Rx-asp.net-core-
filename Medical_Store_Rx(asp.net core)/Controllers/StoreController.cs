@@ -3,6 +3,7 @@ using Medical_Store_Rx_asp.net_core_.Models;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Medical_Store_Rx_asp.net_core_.DTOs.Store;
 
 namespace Medical_Store_Rx_asp.net_core_.Controllers
 {
@@ -19,7 +20,7 @@ namespace Medical_Store_Rx_asp.net_core_.Controllers
 
         // Store Signup
         [HttpPost("StoreSignup")]
-        public async Task<IActionResult> StoreSignup(Medicalstore store)
+        public async Task<IActionResult> StoreSignup(StoreSignupDto store)
         {
             if (store == null)
                 return BadRequest("Invalid data");
@@ -42,9 +43,17 @@ namespace Medical_Store_Rx_asp.net_core_.Controllers
             _db.Users.Add(userObj);
             await _db.SaveChangesAsync();
 
-            store.StoreId = userObj.Id;
+            var Medicalstore = new Medicalstore
+            {
+                StoreId=userObj.Id,
+                Name=store.Name,
+                Email=store.Email,
+                Location=store.Location,
+                Password=store.Password
 
-            _db.Medicalstores.Add(store);
+            };
+
+            _db.Medicalstores.Add(Medicalstore);
             await _db.SaveChangesAsync();
 
             return Ok("MedicalStore Registered");
