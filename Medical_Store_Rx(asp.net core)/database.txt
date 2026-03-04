@@ -1,0 +1,15 @@
+﻿/*Scaffold Command with your connection string:
+
+dotnet ef dbcontext scaffold "Server=AHSAN\\AHSAN;Database=fyp1;User Id=sa;Password=memories@2k19;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer -o Models -f
+Ya agar specific table (medicine) ke liye karna chahte ho:
+
+
+dotnet ef dbcontext scaffold "Server=AHSAN\\AHSAN;Database=fyp1;User Id=sa;Password=memories@2k19;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer -o Models -f --table medicine*/
+
+
+"medicine tables ma new fields run these for changes in database"
+ALTER TABLE medicine ADD pills_per_pack INT;
+ALTER TABLE medicine ADD total_pills_stock INT;
+ALTER TABLE medicine ADD category VARCHAR(50); -- Tablet, Syrup, etc.
+ALTER TABLE medicine ADD strength VARCHAR(20); -- 500mg, 120ml, etc
+

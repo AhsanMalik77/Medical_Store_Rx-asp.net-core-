@@ -3,6 +3,12 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+
+
+Medical_Store_Rx(asp.net core)/appsettings.json
+Medical_Store_Rx(asp.net core)/Properties/
+
+
 # User-specific files
 *.rsuser
 *.suo

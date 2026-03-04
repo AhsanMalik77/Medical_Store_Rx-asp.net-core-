@@ -29,7 +29,7 @@ namespace Medical_Store_Rx_asp.net_core_.Controllers
                 if (role == null)
                     return BadRequest("Email or password is incorrect");
 
-                if (role.Role == "customer")
+                if (role.Role == "user")
                 {
                     var res = _db.Customers.FirstOrDefault(c => c.Email == email && c.Password == password);
                     if (res == null)
@@ -38,7 +38,7 @@ namespace Medical_Store_Rx_asp.net_core_.Controllers
                     return Ok(new
                     {
                         id = res.CId,
-                        namee = res.Name,
+                        name=res.Name,
                         role= role.Role 
 
                     });

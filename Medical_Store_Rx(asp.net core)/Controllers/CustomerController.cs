@@ -124,5 +124,27 @@ namespace Medical_Store_Rx_asp.net_core_.Controllers
 
             return Ok("Prescription added successfully");
         }
+        [HttpGet("salamuser")]
+        public async Task<IActionResult> salamuser(int id)
+        {
+            if (id == 0)
+            {
+                return BadRequest("Wrong id");
+            }
+
+            bool customerExists = _db.Customers.Any(c => c.CId == id);
+            if (!customerExists)
+            {
+                return BadRequest("Customer not found");
+            }
+            var data=_db.Customers.FirstOrDefault(c=>c.CId == id);
+            return Ok(new
+            {
+              
+                name=data.Name
+
+            });
+
+        }
     }
 }
