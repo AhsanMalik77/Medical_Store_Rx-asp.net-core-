@@ -16,3 +16,19 @@ ALTER TABLE medicine ADD strength VARCHAR(20); -- 500mg, 120ml, etc
 
 Update in database Table(medicine):
 Remove Coloumns: quantity,expiry_date,priceperpill
+
+3)"Ahsan Side changes"
+
+CREATE TABLE medicine_batches (
+    batch_id INT PRIMARY KEY IDENTITY(1,1),           -- Identity (Auto-increment)
+    med_id INT NOT NULL,                             -- Foreign Key
+    batch_number NVARCHAR(50) NULL,                  --
+    total_pills INT NOT NULL,                        --
+    remaining_pills INT NOT NULL,                    --
+    expiry_date VARCHAR(100) NULL,                   
+    purchase_price_per_pack DECIMAL(10, 2) NULL,     -- Decimal type
+
+ 
+    CONSTRAINT FK_medicine_batches_medicine FOREIGN KEY (med_id) 
+    REFERENCES medicine(med_id) ON DELETE CASCADE
+);
