@@ -189,19 +189,29 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(100)
                 .IsUnicode(false)
                 .HasColumnName("base_name");
-            entity.Property(e => e.ExpiryDate).HasColumnName("expiry_date");
+          
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
                 .IsUnicode(false)
                 .HasColumnName("name");
             entity.Property(e => e.Price).HasColumnName("price");
-            entity.Property(e => e.Quantity).HasColumnName("quantity");
+        
             entity.Property(e => e.StoreId).HasColumnName("store_id");
 
             entity.HasOne(d => d.Store).WithMany(p => p.Medicines)
                 .HasForeignKey(d => d.StoreId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_medicine_store");
+            // Category, Strength aur baki columns ke sath ye add karein:
+
+            entity.Property(e => e.PillsPerPack)
+                  .HasColumnName("pills_per_pack");
+
+            entity.Property(e => e.Category)
+                  .HasColumnName("category"); // Agar category bhi crash kare toh ye bhi add kar dein
+
+            entity.Property(e => e.Strength)
+                  .HasColumnName("strength");
         });
 
         modelBuilder.Entity<Order>(entity =>

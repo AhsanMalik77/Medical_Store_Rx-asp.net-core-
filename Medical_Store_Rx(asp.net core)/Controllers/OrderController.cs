@@ -52,12 +52,12 @@ namespace Medical_Store_Rx_asp.net_core_.Controllers
                     OrderId = newOrder.OrderId,
                     MedicineId = medicine.MedId,
                     Quantity = quantity,
-                    UnitPrice = medicine.Price,
+              
                     MedName = medicine.Name,
                     CreatedAt = DateTime.Now
                 };
 
-                medicine.Quantity -= quantity;
+              
 
                 _db.OrderItems.Add(orderItem);
                 await _db.SaveChangesAsync();

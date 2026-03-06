@@ -62,58 +62,72 @@ namespace Medical_Store_Rx_asp.net_core_.Controllers
         }
 
         //// Add Medicine
-        //[HttpPost("AddMedicine")]
-        //public async Task<IActionResult> AddMedicine(AddMedicineDto request)
-        //{
-        //    if (request == null)
-        //        return BadRequest("Invalid medicine data");
+        [HttpPost("AddMedicine")]
+        public async Task<IActionResult> AddMedicine(AddMedicineDto request)
+        {
+            if(request == null)
+                return BadRequest("Invalid data");
+            if(request.StoreId <= 0)
+                return BadRequest("Invalid Store ID");
+            if(string.IsNullOrWhiteSpace(request.Name) || string.IsNullOrWhiteSpace(request.BaseName) || string.IsNullOrWhiteSpace(request.Category) || string.IsNullOrWhiteSpace(request.Strength))
+                return BadRequest("Name, BaseName, Category, and Strength are required");
 
-        //    if (string.IsNullOrWhiteSpace(request.Name))
-        //        return BadRequest("Medicine name is required");
+            var store=_db.Medicalstores.FindAsync(request.StoreId);
+            if(await store == null)
+                return NotFound("Store not found");
+            var chkmedicine=_db.Medicines.Any(m=>m.Name == request.Name && m.StoreId == request.StoreId);
+             if(chkmedicine)
+                return BadRequest("Medicine with the same name already exists in this store");
 
-        //    if (request.Price < 0) // Price hoga, Dice nahi
-        //    {
-        //        return BadRequest("Price should be greater than or equal to 0");
-        //    }
+            var medicine = new Medicine
+            {
+                StoreId = request.StoreId,
+                Name = request.Name,
+                BaseName = request.BaseName,
+                Price = request.Price,
+                Category = request.Category,
+                Strength = request.Strength,
+                PillsPerPack = request.PillsPerPack,
 
-        //    // Baqi logic yahan likho
-        //    // _context.Medicines.Add(medicine);
-        //    // await _context.SaveChangesAsync();
+            };
 
-        //    return Ok("Medicine added successfully");
-        //}
-        //// Update Store Profile
-        //[HttpPut("UpdateStore")]
-        //public async Task<IActionResult> UpdateStore(Medicalstore store)
-        //{
-        //    if (store == null)
-        //        return BadRequest("Invalid data");
+            _db.Medicines.Add(medicine);
+            await _db.SaveChangesAsync();
+            return Ok();
 
-        //    var existingStore = await _db.Medicalstores.FindAsync(store.StoreId);
-        //    if (existingStore == null)
-        //        return NotFound("Store not found");
+        }
+        // Update Store Profile
+        [HttpPut("UpdateStore")]
+        public async Task<IActionResult> UpdateStore(Medicalstore store)
+        {
+            if (store == null)
+                return BadRequest("Invalid data");
 
-        //    if (!string.IsNullOrWhiteSpace(store.Name))
-        //        existingStore.Name = store.Name;
+            var existingStore = await _db.Medicalstores.FindAsync(store.StoreId);
+            if (existingStore == null)
+                return NotFound("Store not found");
 
-        //    if (!string.IsNullOrWhiteSpace(store.Location))
-        //        existingStore.Location = store.Location;
+            if (!string.IsNullOrWhiteSpace(store.Name))
+                existingStore.Name = store.Name;
 
-        //    if (!string.IsNullOrWhiteSpace(store.Email))
-        //    {
-        //        bool emailExists = _db.Medicalstores.Any(s => s.Email == store.Email && s.StoreId != store.StoreId);
-        //        if (emailExists)
-        //            return BadRequest("Email already in use by another store");
+            if (!string.IsNullOrWhiteSpace(store.Location))
+                existingStore.Location = store.Location;
 
-        //        existingStore.Email = store.Email;
-        //    }
+            if (!string.IsNullOrWhiteSpace(store.Email))
+            {
+                bool emailExists = _db.Medicalstores.Any(s => s.Email == store.Email && s.StoreId != store.StoreId);
+                if (emailExists)
+                    return BadRequest("Email already in use by another store");
 
-        //    if (!string.IsNullOrWhiteSpace(store.Password))
-        //        existingStore.Password = store.Password;
+                existingStore.Email = store.Email;
+            }
 
-        //    await _db.SaveChangesAsync();
-        //    return Ok("Store updated successfully");
-        //}
+            if (!string.IsNullOrWhiteSpace(store.Password))
+                existingStore.Password = store.Password;
+
+            await _db.SaveChangesAsync();
+            return Ok("Store updated successfully");
+        }
 
         // Update Stock
         [HttpPut("UpdateStock")]
@@ -133,7 +147,7 @@ namespace Medical_Store_Rx_asp.net_core_.Controllers
             if (quantity < 0)
                 return BadRequest("Quantity cannot be negative");
 
-            medicine.Quantity += quantity;
+      
             await _db.SaveChangesAsync();
 
             return Ok("Stock updated successfully");
