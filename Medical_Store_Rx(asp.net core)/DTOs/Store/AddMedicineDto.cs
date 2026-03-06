@@ -12,5 +12,10 @@
         public string Category { get; set; }
         public string Strength { get; set; }
         public int StoreId { get; set; }
+
+
+
+        public string ExpiryDate { get; set; }
+        public int Quantity { get; set; } // Packs count
     }
 }

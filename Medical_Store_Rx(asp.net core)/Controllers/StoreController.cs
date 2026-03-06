@@ -93,7 +93,28 @@ namespace Medical_Store_Rx_asp.net_core_.Controllers
 
             _db.Medicines.Add(medicine);
             await _db.SaveChangesAsync();
-            return Ok();
+
+            if (request.Quantity > 0)
+            {
+                var medicineBatch = new MedicineBatch
+                {
+                    MedId = medicine.MedId,
+                    BatchNumber = Guid.NewGuid().ToString().Substring(0, 8).ToUpper(),
+                    TotalPills = request.Quantity * request.PillsPerPack,
+                    RemainingPills = request.Quantity * request.PillsPerPack,
+                    ExpiryDate = request.ExpiryDate,
+                    PurchasePricePerPack = request.Price
+                };
+                _db.MedicineBatches.Add(medicineBatch);
+                await _db.SaveChangesAsync();
+            }
+            else
+            {
+
+
+                return BadRequest();
+            }
+            return Ok("Saved");
 
         }
         // Update Store Profile

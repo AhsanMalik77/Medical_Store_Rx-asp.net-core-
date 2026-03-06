@@ -27,6 +27,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Medicine> Medicines { get; set; }
 
+    public virtual DbSet<MedicineBatch> MedicineBatches { get; set; }
+
     public virtual DbSet<Order> Orders { get; set; }
 
     public virtual DbSet<OrderItem> OrderItems { get; set; }
@@ -184,34 +186,57 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("medicine");
 
+            entity.HasIndex(e => e.StoreId, "IX_medicines_store_id");
+
             entity.Property(e => e.MedId).HasColumnName("med_id");
             entity.Property(e => e.BaseName)
                 .HasMaxLength(100)
-                .IsUnicode(false)
                 .HasColumnName("base_name");
-          
+            entity.Property(e => e.Category)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("category");
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
-                .IsUnicode(false)
                 .HasColumnName("name");
+            entity.Property(e => e.PillsPerPack).HasColumnName("pills_per_pack");
             entity.Property(e => e.Price).HasColumnName("price");
-        
             entity.Property(e => e.StoreId).HasColumnName("store_id");
+            entity.Property(e => e.Strength)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .HasColumnName("strength");
 
             entity.HasOne(d => d.Store).WithMany(p => p.Medicines)
                 .HasForeignKey(d => d.StoreId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_medicine_store");
-            // Category, Strength aur baki columns ke sath ye add karein:
+        });
 
-            entity.Property(e => e.PillsPerPack)
-                  .HasColumnName("pills_per_pack");
+        modelBuilder.Entity<MedicineBatch>(entity =>
+        {
+            entity.HasKey(e => e.BatchId).HasName("PK__medicine__DBFC043170C37C9A");
 
-            entity.Property(e => e.Category)
-                  .HasColumnName("category"); // Agar category bhi crash kare toh ye bhi add kar dein
+            entity.ToTable("medicine_batches");
 
-            entity.Property(e => e.Strength)
-                  .HasColumnName("strength");
+            entity.Property(e => e.BatchId).HasColumnName("batch_id");
+            entity.Property(e => e.BatchNumber)
+                .HasMaxLength(50)
+                .HasColumnName("batch_number");
+            entity.Property(e => e.ExpiryDate)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .HasColumnName("expiry_date");
+            entity.Property(e => e.MedId).HasColumnName("med_id");
+            entity.Property(e => e.PurchasePricePerPack)
+                .HasColumnType("decimal(10, 2)")
+                .HasColumnName("purchase_price_per_pack");
+            entity.Property(e => e.RemainingPills).HasColumnName("remaining_pills");
+            entity.Property(e => e.TotalPills).HasColumnName("total_pills");
+
+            entity.HasOne(d => d.Med).WithMany(p => p.MedicineBatches)
+                .HasForeignKey(d => d.MedId)
+                .HasConstraintName("FK_medicine_batches_medicine");
         });
 
         modelBuilder.Entity<Order>(entity =>
