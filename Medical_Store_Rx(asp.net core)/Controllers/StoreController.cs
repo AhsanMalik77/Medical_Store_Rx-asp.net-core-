@@ -118,60 +118,81 @@ namespace Medical_Store_Rx_asp.net_core_.Controllers
 
         }
         // Update Store Profile
-        [HttpPut("UpdateStore")]
-        public async Task<IActionResult> UpdateStore(Medicalstore store)
-        {
-            if (store == null)
-                return BadRequest("Invalid data");
+        //[HttpPut("UpdateStore")]
+        //public async Task<IActionResult> UpdateStore(Medicalstore store)
+        //{
+        //    if (store == null)
+        //        return BadRequest("Invalid data");
 
-            var existingStore = await _db.Medicalstores.FindAsync(store.StoreId);
-            if (existingStore == null)
-                return NotFound("Store not found");
+        //    var existingStore = await _db.Medicalstores.FindAsync(store.StoreId);
+        //    if (existingStore == null)
+        //        return NotFound("Store not found");
 
-            if (!string.IsNullOrWhiteSpace(store.Name))
-                existingStore.Name = store.Name;
+        //    if (!string.IsNullOrWhiteSpace(store.Name))
+        //        existingStore.Name = store.Name;
 
-            if (!string.IsNullOrWhiteSpace(store.Location))
-                existingStore.Location = store.Location;
+        //    if (!string.IsNullOrWhiteSpace(store.Location))
+        //        existingStore.Location = store.Location;
 
-            if (!string.IsNullOrWhiteSpace(store.Email))
-            {
-                bool emailExists = _db.Medicalstores.Any(s => s.Email == store.Email && s.StoreId != store.StoreId);
-                if (emailExists)
-                    return BadRequest("Email already in use by another store");
+        //    if (!string.IsNullOrWhiteSpace(store.Email))
+        //    {
+        //        bool emailExists = _db.Medicalstores.Any(s => s.Email == store.Email && s.StoreId != store.StoreId);
+        //        if (emailExists)
+        //            return BadRequest("Email already in use by another store");
 
-                existingStore.Email = store.Email;
-            }
+        //        existingStore.Email = store.Email;
+        //    }
 
-            if (!string.IsNullOrWhiteSpace(store.Password))
-                existingStore.Password = store.Password;
+        //    if (!string.IsNullOrWhiteSpace(store.Password))
+        //        existingStore.Password = store.Password;
 
-            await _db.SaveChangesAsync();
-            return Ok("Store updated successfully");
-        }
+        //    await _db.SaveChangesAsync();
+        //    return Ok("Store updated successfully");
+        //}
 
         // Update Stock
         [HttpPut("UpdateStock")]
-        public async Task<IActionResult> UpdateStock(int storeId, int medId, int quantity)
+        public async Task<IActionResult> UpdateStock(AddBatchDto batch)
+
         {
-            if (storeId <= 0 || medId <= 0)
-                return BadRequest("Invalid Store ID or Medicine ID");
+            if(batch == null)
+                return BadRequest("Invalid data");
+            if(batch.MedId <= 0)
+                return BadRequest("Invalid Medicine ID");
+            var medicine = await _db.Medicines.FindAsync(batch.MedId);
 
-            var store = await _db.Medicalstores.FindAsync(storeId);
-            if (store == null)
-                return NotFound("Store not found");
-
-            var medicine = _db.Medicines.FirstOrDefault(m => m.MedId == medId && m.StoreId == storeId);
-            if (medicine == null)
+            if(medicine == null)
                 return NotFound("Medicine not found");
+            if(batch.Quantity <= 0)
+                return BadRequest("Quantity must be greater than zero");
+            
 
-            if (quantity < 0)
-                return BadRequest("Quantity cannot be negative");
+            int tpills=cal(batch.Quantity,medicine.PillsPerPack ?? 0);
+            var medicineBatch = new MedicineBatch
+            {
+              
+             MedId = batch.MedId,
+             BatchNumber = Guid.NewGuid().ToString().Substring(0, 8).ToUpper(),
+             TotalPills = tpills,
+             RemainingPills=tpills,
+             ExpiryDate = batch.ExpiryDate,
+             PurchasePricePerPack = batch.Price,
 
-      
+
+
+
+            };
+            _db.MedicineBatches.Add(medicineBatch);
             await _db.SaveChangesAsync();
-
             return Ok("Stock updated successfully");
+
         }
+        private int cal(int a, int b)
+        {
+            return a * b;
+        }
+
     }
-}
+
+
+    }
