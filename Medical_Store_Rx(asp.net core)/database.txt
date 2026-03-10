@@ -1,8 +1,7 @@
-﻿/*Scaffold Command with your connection string:
+﻿
+Scaffold-DbContext "Server=AHSAN\AHSAN;Database=fyp1;User Id=sa;Password=memories@2k19;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -Context AppDbContext -Force
+//upward line is not for you...
 
-dotnet ef dbcontext scaffold "Server=AHSAN\\AHSAN;Database=fyp1;User Id=sa;Password=memories@2k19;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer -o Models -f
-Ya agar specific table (medicine) ke liye karna chahte ho:
-dotnet ef dbcontext scaffold "Server=AHSAN\\AHSAN;Database=fyp1;User Id=sa;Password=memories@2k19;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer -o Models -f --table medicine*/
 
 1)"Ahsan Side Changes"
 
@@ -32,3 +31,43 @@ CREATE TABLE medicine_batches (
     CONSTRAINT FK_medicine_batches_medicine FOREIGN KEY (med_id) 
     REFERENCES medicine(med_id) ON DELETE CASCADE
 );
+
+4)"Ahsan Side changes"" 
+
+-- Purana Dob column delete karne ke liye
+ALTER TABLE profiles 
+DROP COLUMN Dob;
+
+-- Naya age column add karne ke liye (INT type kyunke age number hota hai)
+ALTER TABLE profiles 
+ADD age INT;
+ALTER TABLE profiles 
+ADD default_lat DECIMAL(10, 8),
+    default_long DECIMAL(11, 8);
+	
+Alter Table Profiles 
+
+Add Addres varchar(60)
+
+DROP TABLE diseases_phr
+DROP TABLE currentmed_phr
+
+SELECT * FROM PROFILES
+CREATE TABLE phr (
+    id INT PRIMARY KEY IDENTITY(1,1),           -- Unique ID for each entry
+    profile_id INT NOT NULL,                    -- Connection to profiles table
+    entry_name NVARCHAR(255) NOT NULL,          -- "Acne", "Sugar", "Propanol" etc.
+    category NVARCHAR(50) NOT NULL,             -- "Allergy", "Disease", "Medicine"
+    
+    -- Foreign Key Constraint taake data safe rahe
+    CONSTRAINT FK_Profile_PHR FOREIGN KEY (profile_id) 
+    REFERENCES profiles(id) ON DELETE CASCADE
+);
+
+select * from phr
+
+
+ALTER TABLE Profiles
+ALTER COLUMN Age INT;
+
+

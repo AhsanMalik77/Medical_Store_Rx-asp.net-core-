@@ -60,51 +60,103 @@ namespace Medical_Store_Rx_asp.net_core_.Controllers
         }
         // Add profile
         [HttpPost("AddProfile")]
-        public async Task<IActionResult> AddProfile([FromBody] Profile profile)
+        public async Task<IActionResult> AddProfile([FromBody] AddMemberDto member)
         {
-            if (profile == null)
+            if (member == null)
                 return BadRequest("Invalid data");
 
-            bool customerExists = _db.Customers.Any(c => c.CId == profile.CusId);
+            bool customerExists = _db.Customers.Any(c => c.CId == member.cus_id);
             if (!customerExists)
                 return BadRequest("Customer not found");
 
-            _db.Profiles.Add(profile);
-            await _db.SaveChangesAsync();
-            return Ok("Profile added successfully");
+            try
+            {
+
+
+                var Profile = new Profile
+                {
+                    CusId = member.cus_id,
+                    Fullname = member.fname,
+                    Relation = member.relation,
+                    Gender = member.gender,
+                    Contact = member.contact,
+                    Age = member.age,
+                    DefaultLat = member.lat,
+                    DefaultLong = member.lng,
+                    Addres = member.address
+
+
+
+                };
+                var check =_db.Profiles.Add(Profile);
+                await _db.SaveChangesAsync();
+
+                if(check == null)
+                {
+                    return BadRequest("Failed to add profile");
+                }
+                else
+                {
+                    var profileId = Profile.Id;
+
+                    if(profileId <= 0)
+                    {
+                        return BadRequest("Invalid Profile ID");
+                    }
+
+                    foreach (var allergy in member.Allergies)
+                    {
+
+                        _db.Phrs.Add(new Phr
+                        {
+                            ProfileId = profileId,
+                            EntryName = allergy,
+                            Category = "Allergy"
+                        });
+                    }
+                    foreach (var disease in member.PastDiseases)
+                    {
+                        _db.Phrs.Add(new Phr
+                        {
+                            ProfileId= profileId,
+                            EntryName = disease,
+                            Category = "PastDisease"
+                        });
+                        
+                        
+                    }
+                    foreach (var medicine in member.AlreadyTakingMedicines)
+                    {
+                        _db.Phrs.Add(new Phr
+                        {
+                            ProfileId = profileId,
+                            EntryName = medicine,
+                            Category = "AlreadyTakingMedicine"
+                        });
+                    }
+
+                    await _db.SaveChangesAsync();
+
+
+                    return Ok("Profile added successfully With Phr");
+                }
+
+                  
+
+
+
+
+            }
+            catch(Exception e)
+            {
+                return BadRequest("Error: " + e.Message);
+            }
         }
 
-        // Add disease to profile
-        [HttpPost("AddDiseasePhr")]
-        public async Task<IActionResult> AddDiseasePhr([FromBody] DiseasesPhr dp)
-        {
-            if (dp == null)
-                return BadRequest("Invalid data");
 
-            bool profileExists = _db.Profiles.Any(p => p.Id == dp.ProfileId);
-            if (!profileExists)
-                return BadRequest("Profile not found");
 
-            _db.DiseasesPhrs.Add(dp);
-            await _db.SaveChangesAsync();
-            return Ok("Disease phr added successfully");
-        }
 
-        // Add current medicine
-        [HttpPost("AddCurrentMedPhr")]
-        public async Task<IActionResult> AddCurrentMedPhr([FromBody] CurrentmedPhr cp)
-        {
-            if (cp == null)
-                return BadRequest("Invalid data");
 
-            bool profileExists = _db.Profiles.Any(p => p.Id == cp.ProfileId);
-            if (!profileExists)
-                return BadRequest("Profile not found");
-
-            _db.CurrentmedPhrs.Add(cp);
-            await _db.SaveChangesAsync();
-            return Ok("Current medicine phr added successfully");
-        }
 
         // Add prescription
         [HttpPost("AddPrescription")]

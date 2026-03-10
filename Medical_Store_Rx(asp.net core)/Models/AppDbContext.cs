@@ -17,11 +17,7 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Contraindication> Contraindications { get; set; }
 
-    public virtual DbSet<CurrentmedPhr> CurrentmedPhrs { get; set; }
-
     public virtual DbSet<Customer> Customers { get; set; }
-
-    public virtual DbSet<DiseasesPhr> DiseasesPhrs { get; set; }
 
     public virtual DbSet<Medicalstore> Medicalstores { get; set; }
 
@@ -32,6 +28,8 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<Order> Orders { get; set; }
 
     public virtual DbSet<OrderItem> OrderItems { get; set; }
+
+    public virtual DbSet<Phr> Phrs { get; set; }
 
     public virtual DbSet<Prescription> Prescriptions { get; set; }
 
@@ -71,25 +69,6 @@ public partial class AppDbContext : DbContext
                 .HasColumnName("with_base");
         });
 
-        modelBuilder.Entity<CurrentmedPhr>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__currentm__3213E83FEA045C88");
-
-            entity.ToTable("currentmed_phr");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.CurrentMed)
-                .HasMaxLength(100)
-                .IsUnicode(false)
-                .HasColumnName("current_med");
-            entity.Property(e => e.ProfileId).HasColumnName("profile_id");
-
-            entity.HasOne(d => d.Profile).WithMany(p => p.CurrentmedPhrs)
-                .HasForeignKey(d => d.ProfileId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__currentme__profi__1D7B6025");
-        });
-
         modelBuilder.Entity<Customer>(entity =>
         {
             entity.HasKey(e => e.CId).HasName("PK__customer__213EE77497312130");
@@ -123,25 +102,6 @@ public partial class AppDbContext : DbContext
                 .HasForeignKey<Customer>(d => d.CId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__customer__dob__7EF6D905");
-        });
-
-        modelBuilder.Entity<DiseasesPhr>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__diseases__3213E83F075D0B4C");
-
-            entity.ToTable("diseases_phr");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Disease)
-                .HasMaxLength(100)
-                .IsUnicode(false)
-                .HasColumnName("disease");
-            entity.Property(e => e.ProfileId).HasColumnName("profile_id");
-
-            entity.HasOne(d => d.Profile).WithMany(p => p.DiseasesPhrs)
-                .HasForeignKey(d => d.ProfileId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__diseases___profi__3EDC53F0");
         });
 
         modelBuilder.Entity<Medicalstore>(entity =>
@@ -321,6 +281,26 @@ public partial class AppDbContext : DbContext
                 .HasConstraintName("FK__order_ite__order__4959E263");
         });
 
+        modelBuilder.Entity<Phr>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__phr__3213E83F7261A2DA");
+
+            entity.ToTable("phr");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Category)
+                .HasMaxLength(50)
+                .HasColumnName("category");
+            entity.Property(e => e.EntryName)
+                .HasMaxLength(255)
+                .HasColumnName("entry_name");
+            entity.Property(e => e.ProfileId).HasColumnName("profile_id");
+
+            entity.HasOne(d => d.Profile).WithMany(p => p.Phrs)
+                .HasForeignKey(d => d.ProfileId)
+                .HasConstraintName("FK_Profile_PHR");
+        });
+
         modelBuilder.Entity<Prescription>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__prescrip__3213E83FD9CB6A37");
@@ -364,11 +344,21 @@ public partial class AppDbContext : DbContext
             entity.ToTable("profiles");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Addres)
+                .HasMaxLength(60)
+                .IsUnicode(false);
+            entity.Property(e => e.Age).HasColumnName("age");
             entity.Property(e => e.Contact)
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("contact");
             entity.Property(e => e.CusId).HasColumnName("cus_id");
+            entity.Property(e => e.DefaultLat)
+                .HasColumnType("decimal(10, 8)")
+                .HasColumnName("default_lat");
+            entity.Property(e => e.DefaultLong)
+                .HasColumnType("decimal(11, 8)")
+                .HasColumnName("default_long");
             entity.Property(e => e.Fullname)
                 .HasMaxLength(50)
                 .IsUnicode(false);

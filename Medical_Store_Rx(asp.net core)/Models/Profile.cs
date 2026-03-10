@@ -11,19 +11,23 @@ public partial class Profile
 
     public string? Fullname { get; set; }
 
-    public DateOnly? Dob { get; set; }
-
     public string? Relation { get; set; }
 
     public string? Gender { get; set; }
 
     public string? Contact { get; set; }
 
-    public virtual ICollection<CurrentmedPhr> CurrentmedPhrs { get; set; } = new List<CurrentmedPhr>();
+    public int? Age { get; set; }
+
+    public decimal? DefaultLat { get; set; }
+
+    public decimal? DefaultLong { get; set; }
+
+    public string? Addres { get; set; }
 
     public virtual Customer Cus { get; set; } = null!;
 
-    public virtual ICollection<DiseasesPhr> DiseasesPhrs { get; set; } = new List<DiseasesPhr>();
+    public virtual ICollection<Phr> Phrs { get; set; } = new List<Phr>();
 
     public virtual ICollection<Prescription> Prescriptions { get; set; } = new List<Prescription>();
 }
