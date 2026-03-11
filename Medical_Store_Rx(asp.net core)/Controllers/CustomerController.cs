@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Medical_Store_Rx_asp.net_core_.DTOs.User;
 using Medical_Store_Rx_asp.net_core_.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
-using Medical_Store_Rx_asp.net_core_.DTOs.User;
 
 namespace Medical_Store_Rx_asp.net_core_.Controllers
 {
@@ -215,6 +216,47 @@ namespace Medical_Store_Rx_asp.net_core_.Controllers
 
         }
 
+        [HttpPut("Memberupdate")]
+        public async Task<IActionResult> UpdateMember(UpdateMemberDto member)
+        {
+            try
+            {
+                // Validate the input
+                if (member == null || member.cus_id <= 0)
+                {
+                    return BadRequest(new { message = "Invalid member data or ID" });
+                }
+
+                // Check if member exists in database
+                var existingProfile = await _db.Profiles.FirstOrDefaultAsync(m=>m.Id==member.profile_id&&m.CusId==member.cus_id);
+                if (existingProfile == null)
+                {
+                    return NotFound(new { message = $"Member not found" });
+                }
+
+                existingProfile.Fullname = member.fname;
+                existingProfile.Relation = member.relation;
+                existingProfile.Gender = member.gender;
+                existingProfile.Contact = member.contact;
+                existingProfile.Age = member.age;
+                existingProfile.DefaultLat = member.lat;
+
+
+
+                // Save changes to database
+                await _db.SaveChangesAsync();
+
+               
+                return Ok("Updaated");
+               
+            }
+            catch (Exception ex)
+            {
+           
+                return StatusCode(500, new { message = "An error occurred while updating member", error = ex.Message });
+            }
+        }
+
 
 
 
@@ -254,7 +296,7 @@ namespace Medical_Store_Rx_asp.net_core_.Controllers
         //    var data=_db.Customers.FirstOrDefault(c=>c.CId == id);
         //    return Ok(new
         //    {
-              
+
         //        name=data.Name
 
         //    });

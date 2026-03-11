@@ -3,6 +3,7 @@
     public class UpdateMemberDto
     {
         public int cus_id { get; set; }
+        public int profile_id {  get; set; }
         public string fname { get; set; }
         public string relation { get; set; }
         public string gender { get; set; }
