@@ -91,12 +91,12 @@ namespace Medical_Store_Rx_asp.net_core_.Controllers
                 var check =_db.Profiles.Add(Profile);
                 await _db.SaveChangesAsync();
 
-                if(check == null)
-                {
-                    return BadRequest("Failed to add profile");
-                }
-                else
-                {
+             
+           
+                    if(member.Allergies==null&&member.PastDiseases==null&&member.AlreadyTakingMedicines==null)
+                    {
+                        return Ok("Profile added successfully without Phr");
+                    }
                     var profileId = Profile.Id;
 
                     if(profileId <= 0)
@@ -138,14 +138,9 @@ namespace Medical_Store_Rx_asp.net_core_.Controllers
                     await _db.SaveChangesAsync();
 
 
-                    return Ok("Profile added successfully With Phr");
-                }
+                
 
-                  
-
-
-
-
+                    return Ok("Profile and PHR added successfully");
             }
             catch(Exception e)
             {
@@ -153,50 +148,117 @@ namespace Medical_Store_Rx_asp.net_core_.Controllers
             }
         }
 
-
-
-
-
-
-        // Add prescription
-        [HttpPost("AddPrescription")]
-        public async Task<IActionResult> AddPrescription([FromBody] Prescription pre)
+        [HttpPut("PhrUpdate")]
+        public async Task<IActionResult> Updatephr(PhrDto phr)
         {
-            if (pre == null)
-                return BadRequest("Invalid data");
+            if (phr == null)
+            {
+                return BadRequest("Nothing to update");
+            }
 
-            bool customerExists = _db.Customers.Any(c => c.CId == pre.CustId);
-            bool profileExists = _db.Profiles.Any(p => p.Id == pre.Profileid);
 
-            if (!customerExists || !profileExists)
-                return BadRequest("Customer or Profile not found");
 
-            _db.Prescriptions.Add(pre);
-            await _db.SaveChangesAsync();
 
-            return Ok("Prescription added successfully");
+
+                try
+                {
+                 
+                    var existingData = _db.Phrs.Where(b => b.ProfileId == phr.ProfileId).ToList();
+
+                    var existingAllergies = existingData.Where(x => x.Category == "Allergy").ToList();
+                    var existingDiseases = existingData.Where(x => x.Category == "PastDisease").ToList();
+                    var existingMedicines = existingData.Where(x => x.Category == "AlreadyTakingMedicine").ToList();
+
+                    // ALLERGIES
+                    foreach (var allergy in existingAllergies)
+                        if (!phr.Allergies.Contains(allergy.EntryName))
+                            _db.Phrs.Remove(allergy);
+
+                    foreach (var item in phr.Allergies)
+                        if (!existingAllergies.Any(a => a.EntryName == item))
+                            _db.Phrs.Add(new Phr {
+                                ProfileId = phr.ProfileId,
+                                EntryName = item,
+                                Category = "Allergy"
+                            });
+
+                    // PAST DISEASES
+                    foreach (var disease in existingDiseases)
+                        if (!phr.PastDiseases.Contains(disease.EntryName)) 
+                            _db.Phrs.Remove(disease);
+                    foreach (var item in phr.PastDiseases)
+                        if (!existingDiseases.Any(d => d.EntryName == item))
+                            _db.Phrs.Add(new Phr { ProfileId = phr.ProfileId, EntryName = item, Category = "PastDisease" });
+
+                    // MEDICINES 
+                    foreach (var medicine in existingMedicines)
+                        if (!phr.AlreadyTakingMedicines.Contains(medicine.EntryName))
+                            _db.Phrs.Remove(medicine);
+                    foreach (var item in phr.AlreadyTakingMedicines)
+                        if (!existingMedicines.Any(m => m.EntryName == item))
+                            _db.Phrs.Add(new Phr { ProfileId = phr.ProfileId,
+                                EntryName = item, 
+                                Category = "AlreadyTakingMedicine" 
+                            });
+
+                    _db.SaveChanges();
+
+                    return Ok("Updated");
+                }
+                catch (Exception ex)
+                {
+                 return BadRequest(ex.Message);
+                }
+
+
+         
+
         }
-        [HttpGet("salamuser")]
-        public async Task<IActionResult> salamuser(int id)
-        {
-            if (id == 0)
-            {
-                return BadRequest("Wrong id");
-            }
 
-            bool customerExists = _db.Customers.Any(c => c.CId == id);
-            if (!customerExists)
-            {
-                return BadRequest("Customer not found");
-            }
-            var data=_db.Customers.FirstOrDefault(c=>c.CId == id);
-            return Ok(new
-            {
+
+
+
+
+
+        //// Add prescription
+        //[HttpPost("AddPrescription")]
+        //public async Task<IActionResult> AddPrescription([FromBody] Prescription pre)
+        //{
+        //    if (pre == null)
+        //        return BadRequest("Invalid data");
+
+        //    bool customerExists = _db.Customers.Any(c => c.CId == pre.CustId);
+        //    bool profileExists = _db.Profiles.Any(p => p.Id == pre.Profileid);
+
+        //    if (!customerExists || !profileExists)
+        //        return BadRequest("Customer or Profile not found");
+
+        //    _db.Prescriptions.Add(pre);
+        //    await _db.SaveChangesAsync();
+
+        //    return Ok("Prescription added successfully");
+        //}
+        //[HttpGet("salamuser")]
+        //public async Task<IActionResult> salamuser(int id)
+        //{
+        //    if (id == 0)
+        //    {
+        //        return BadRequest("Wrong id");
+        //    }
+
+        //    bool customerExists = _db.Customers.Any(c => c.CId == id);
+        //    if (!customerExists)
+        //    {
+        //        return BadRequest("Customer not found");
+        //    }
+        //    var data=_db.Customers.FirstOrDefault(c=>c.CId == id);
+        //    return Ok(new
+        //    {
               
-                name=data.Name
+        //        name=data.Name
 
-            });
+        //    });
 
-        }
+        //}
     }
 }
